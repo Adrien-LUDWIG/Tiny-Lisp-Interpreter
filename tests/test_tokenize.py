@@ -1,4 +1,4 @@
-from tokenizer import tokenize
+from lisp_tokenizer import tokenize
 
 
 def test_number():
