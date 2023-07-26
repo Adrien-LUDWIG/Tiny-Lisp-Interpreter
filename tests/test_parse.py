@@ -1,68 +1,89 @@
 import pytest
 
-from lisp_parser import parse, ParseError
+from lisp_parser import _parse, ParseError
+
+
+def _parse_tester(tokens, expected_ast, index=0, expected_index=None):
+    if expected_index is None:
+        expected_index = len(tokens)
+
+    actual_ast, actual_index = _parse(tokens, index)
+
+    assert actual_ast == expected_ast
+    assert actual_index == expected_index
 
 
 def test_number():
-    assert parse(["42"]) == 42
+    _parse_tester(tokens=["42"], expected_ast=42)
 
 
 def test_parentheses():
-    assert parse(["(", ")"]) == []
+    _parse_tester(["(", ")"], [])
 
 
 def test_simple_operation():
-    assert parse(["(", "+", "23", "19", ")"]) == ["+", 23, 19]
+    tokens = ["(", "+", "23", "19", ")"]
+    expected_ast = ["+", 23, 19]
+    _parse_tester(tokens, expected_ast)
 
 
 def test_nested_operations():
-    actual = parse(["(", "+", "23", "(", "+", "12", "7", ")", ")"])
-    excepted = ["+", 23, ["+", 12, 7]]
-    assert actual == excepted
+    tokens = ["(", "+", "23", "(", "+", "12", "7", ")", ")"]
+    expected_ast = ["+", 23, ["+", 12, 7]]
+    _parse_tester(tokens, expected_ast)
 
 
 def test_multi_nested_operations():
-    assert parse(
-        [
-            "(",
-            "first",
-            "(",
-            "list",
-            "1",
-            "(",
-            "+",
-            "2",
-            "3",
-            ")",
-            "(",
-            "-",
-            "5",
-            "4",
-            ")",
-            "(",
-            "*",
-            "2",
-            "1",
-            ")",
-            "(",
-            "/",
-            "6",
-            "3",
-            ")",
-            "9",
-            ")",
-            ")",
-        ]
-    ) == ["first", ["list", 1, ["+", 2, 3], ["-", 5, 4], ["*", 2, 1], ["/", 6, 3], 9]]
+    tokens = [
+        "(",
+        "first",
+        "(",
+        "list",
+        "1",
+        "(",
+        "+",
+        "2",
+        "3",
+        ")",
+        "(",
+        "-",
+        "5",
+        "4",
+        ")",
+        "(",
+        "*",
+        "2",
+        "1",
+        ")",
+        "(",
+        "/",
+        "6",
+        "3",
+        ")",
+        "9",
+        ")",
+        ")",
+    ]
+    expected_ast = [
+        "first",
+        ["list", 1, ["+", 2, 3], ["-", 5, 4], ["*", 2, 1], ["/", 6, 3], 9],
+    ]
+    _parse_tester(tokens, expected_ast)
 
 
+# `_parse` should not be called with an empty list of tokens.
 def test_empty():
-    assert parse([]) == []
+    tokens = []
+
+    with pytest.raises(IndexError):
+        _parse(tokens)
 
 
 def test_missing_parenthese():
+    tokens = ["(", "+", "1", "2"]
+
     with pytest.raises(ParseError) as error:
-        parse(["(", "+", "1", "2"])
+        _parse(tokens)
 
     assert (
         str(error.value)
@@ -71,14 +92,9 @@ def test_missing_parenthese():
 
 
 def test_unexpected_closing_parenthese():
+    tokens = [")"]
+
     with pytest.raises(ParseError) as error:
-        parse([")"])
+        _parse(tokens)
 
     assert str(error.value) == "Unexpected `)`"
-
-
-def test_unreachable_tokens():
-    with pytest.raises(ParseError) as error:
-        parse(["(", "+", "1", "2", ")", "3"])
-
-    assert str(error.value) == "You have unreachable code."
