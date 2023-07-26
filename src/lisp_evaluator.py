@@ -7,7 +7,7 @@ class EvaluationError(ValueError):
     pass
 
 
-def evaluate(ast):
+def _evaluate(ast):
     # Atom: integer
     if type(ast) is int:
         return ast
@@ -21,7 +21,7 @@ def evaluate(ast):
         return None
 
     operation = ast.pop(0)
-    terms = [evaluate(expression) for expression in ast]
+    terms = [_evaluate(expression) for expression in ast]
 
     match operation:
         case "+":

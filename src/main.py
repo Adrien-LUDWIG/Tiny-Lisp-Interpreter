@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
-from lisp_evaluator import evaluate
+from lisp_evaluator import _evaluate
 from lisp_parser import parse
 from lisp_tokenizer import tokenize
 
@@ -41,10 +41,10 @@ def main():
 
     if args.file is not None:
         with open(args.file, "r") as file:
-            return evaluate(parse(tokenize(file.read())))
+            return _evaluate(parse(tokenize(file.read())))
 
     if args.command is not None:
-        return evaluate(parse(tokenize(args.command)))
+        return _evaluate(parse(tokenize(args.command)))
 
     print("REPL")
 
