@@ -1,6 +1,6 @@
 import pytest
 
-from lisp_parser import _parse, ParseError
+from lisp_parser import _parse, ParseError, parse
 
 
 def _parse_tester(tokens, expected_ast, index=0, expected_index=None):
@@ -92,3 +92,16 @@ class Test_parse:
             _parse(tokens)
 
         assert str(error.value) == "Unexpected `)`"
+
+
+class TestParse:
+    def test_empty(self):
+        tokens = []
+
+        assert parse(tokens) == []
+
+    def test_multi_asts(self):
+        tokens = ["(", "+", "23", "19", ")", "42"]
+        expected_ast = [["+", 23, 19], 42]
+
+        assert parse(tokens) == expected_ast

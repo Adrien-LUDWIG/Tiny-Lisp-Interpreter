@@ -28,13 +28,16 @@ def _parse(tokens, index=0):
 
 
 def parse(tokens):
+    asts = []
+
     # Empty input
     if len(tokens) == 0:
         return []
 
-    ast, index = _parse(tokens, index=0)
+    index = 0
 
-    if index != len(tokens):
-        raise ParseError("You have unreachable code.")
+    while index != len(tokens):
+        ast, index = _parse(tokens, index)
+        asts.append(ast)
 
-    return ast
+    return asts
