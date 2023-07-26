@@ -13,88 +13,82 @@ def _parse_tester(tokens, expected_ast, index=0, expected_index=None):
     assert actual_index == expected_index
 
 
-def test_number():
-    _parse_tester(tokens=["42"], expected_ast=42)
+class Test_parse:
+    def test_number(self):
+        _parse_tester(tokens=["42"], expected_ast=42)
 
+    def test_parentheses(self):
+        _parse_tester(["(", ")"], [])
 
-def test_parentheses():
-    _parse_tester(["(", ")"], [])
+    def test_simple_operation(self):
+        tokens = ["(", "+", "23", "19", ")"]
+        expected_ast = ["+", 23, 19]
+        _parse_tester(tokens, expected_ast)
 
+    def test_nested_operations(self):
+        tokens = ["(", "+", "23", "(", "+", "12", "7", ")", ")"]
+        expected_ast = ["+", 23, ["+", 12, 7]]
+        _parse_tester(tokens, expected_ast)
 
-def test_simple_operation():
-    tokens = ["(", "+", "23", "19", ")"]
-    expected_ast = ["+", 23, 19]
-    _parse_tester(tokens, expected_ast)
+    def test_multi_nested_operations(self):
+        tokens = [
+            "(",
+            "first",
+            "(",
+            "list",
+            "1",
+            "(",
+            "+",
+            "2",
+            "3",
+            ")",
+            "(",
+            "-",
+            "5",
+            "4",
+            ")",
+            "(",
+            "*",
+            "2",
+            "1",
+            ")",
+            "(",
+            "/",
+            "6",
+            "3",
+            ")",
+            "9",
+            ")",
+            ")",
+        ]
+        expected_ast = [
+            "first",
+            ["list", 1, ["+", 2, 3], ["-", 5, 4], ["*", 2, 1], ["/", 6, 3], 9],
+        ]
+        _parse_tester(tokens, expected_ast)
 
+    # `_parse` should not be called with an empty list of tokens.
+    def test_empty(self):
+        tokens = []
 
-def test_nested_operations():
-    tokens = ["(", "+", "23", "(", "+", "12", "7", ")", ")"]
-    expected_ast = ["+", 23, ["+", 12, 7]]
-    _parse_tester(tokens, expected_ast)
+        with pytest.raises(IndexError):
+            _parse(tokens)
 
+    def test_missing_parenthese(self):
+        tokens = ["(", "+", "1", "2"]
 
-def test_multi_nested_operations():
-    tokens = [
-        "(",
-        "first",
-        "(",
-        "list",
-        "1",
-        "(",
-        "+",
-        "2",
-        "3",
-        ")",
-        "(",
-        "-",
-        "5",
-        "4",
-        ")",
-        "(",
-        "*",
-        "2",
-        "1",
-        ")",
-        "(",
-        "/",
-        "6",
-        "3",
-        ")",
-        "9",
-        ")",
-        ")",
-    ]
-    expected_ast = [
-        "first",
-        ["list", 1, ["+", 2, 3], ["-", 5, 4], ["*", 2, 1], ["/", 6, 3], 9],
-    ]
-    _parse_tester(tokens, expected_ast)
+        with pytest.raises(ParseError) as error:
+            _parse(tokens)
 
+        assert (
+            str(error.value)
+            == "Unexpected EOF. A closing parentheses `)` might be missing."
+        )
 
-# `_parse` should not be called with an empty list of tokens.
-def test_empty():
-    tokens = []
+    def test_unexpected_closing_parenthese(self):
+        tokens = [")"]
 
-    with pytest.raises(IndexError):
-        _parse(tokens)
+        with pytest.raises(ParseError) as error:
+            _parse(tokens)
 
-
-def test_missing_parenthese():
-    tokens = ["(", "+", "1", "2"]
-
-    with pytest.raises(ParseError) as error:
-        _parse(tokens)
-
-    assert (
-        str(error.value)
-        == "Unexpected EOF. A closing parentheses `)` might be missing."
-    )
-
-
-def test_unexpected_closing_parenthese():
-    tokens = [")"]
-
-    with pytest.raises(ParseError) as error:
-        _parse(tokens)
-
-    assert str(error.value) == "Unexpected `)`"
+        assert str(error.value) == "Unexpected `)`"
