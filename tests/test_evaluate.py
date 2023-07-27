@@ -1,6 +1,6 @@
 import pytest
 
-from lisp_evaluator import _evaluate, EvaluationError
+from lisp_evaluator import _evaluate, EvaluationError, evaluate
 
 
 class Test_evaluate:
@@ -31,3 +31,11 @@ class Test_evaluate:
         with pytest.raises(EvaluationError) as error:
             _evaluate(["%", 142, 100])
         assert str(error.value).startswith("This operation doesn't exist: ")
+
+
+class TestEvaluate:
+    def test_no_ast(self):
+        assert evaluate([]) is None
+
+    def test_multi_asts(self):
+        assert evaluate([["-", 23, 19], 42]) == 42

@@ -32,3 +32,12 @@ def _evaluate(ast):
             return multiply(terms)
 
     raise EvaluationError("This operation doesn't exist: " + str(operation))
+
+
+def evaluate(asts):
+    result = None
+
+    for ast in asts:
+        result = _evaluate(ast)
+
+    return result
