@@ -1,6 +1,7 @@
 from lisp_evaluator import evaluate, EvaluationError
 from lisp_parser import parse, ParseError
 from lisp_tokenizer import tokenize
+from operations.operation_argument_error import OperationArgumentError
 
 
 def run(source_code):
@@ -20,7 +21,7 @@ def REPL():
                 if result is not None:
                     print(result)
 
-            except (ParseError, EvaluationError) as error:
+            except (ParseError, EvaluationError, OperationArgumentError) as error:
                 print(error)
 
     except KeyboardInterrupt:

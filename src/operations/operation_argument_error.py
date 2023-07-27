@@ -1,0 +1,2 @@
+class OperationArgumentError(ValueError):
+    pass

@@ -1,11 +1,14 @@
+from operations.operation_argument_error import OperationArgumentError
+
+
 def substract(terms):
     if terms == []:
-        raise ValueError("`-` takes one or more term(s).")
+        raise OperationArgumentError("`-` takes one or more term(s).")
 
     first_value = terms.pop(0)
 
     if type(first_value) != int:
-        raise TypeError(
+        raise OperationArgumentError(
             "Args of `-` should evaluate to `int`, but received: " + str(first_value)
         )
 
@@ -16,7 +19,7 @@ def substract(terms):
 
     for term in terms:
         if type(term) != int:
-            raise TypeError(
+            raise OperationArgumentError(
                 "Args of `-` should evaluate to `int`, but received: "
                 + str(first_value)
             )
