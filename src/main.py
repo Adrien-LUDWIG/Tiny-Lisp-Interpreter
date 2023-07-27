@@ -1,9 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
-from lisp_evaluator import evaluate
-from lisp_parser import parse
-from lisp_tokenizer import tokenize
+from lisp_interpreter import run
 
 
 class ArgumentError(ValueError):
@@ -41,10 +39,10 @@ def main():
 
     if args.file is not None:
         with open(args.file, "r") as file:
-            return evaluate(parse(tokenize(file.read())))
+            return run(file.read())
 
     if args.command is not None:
-        return evaluate(parse(tokenize(args.command)))
+        return run(args.command)
 
     print("REPL")
 
