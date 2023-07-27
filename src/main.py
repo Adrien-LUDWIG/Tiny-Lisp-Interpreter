@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
-from lisp_interpreter import run
+from lisp_interpreter import run, REPL
 
 
 class ArgumentError(ValueError):
@@ -44,8 +44,8 @@ def main():
     if args.command is not None:
         return run(args.command)
 
-    print("REPL")
+    REPL()
 
 
 if __name__ == "__main__":
-    print(main())
+    main()
