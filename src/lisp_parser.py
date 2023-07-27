@@ -30,10 +30,6 @@ def _parse(tokens, index=0):
 def parse(tokens):
     asts = []
 
-    # Empty input
-    if len(tokens) == 0:
-        return []
-
     index = 0
 
     while index != len(tokens):
